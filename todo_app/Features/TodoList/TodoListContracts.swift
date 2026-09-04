@@ -17,7 +17,6 @@ protocol TodoListPresenterProtocol: ObservableObject {
     var path: NavigationPath { get set }
     
     func viewDidLoad()
-    func didTapAdd()
     func didTapEdit(_ item: TodoItem)
     func didTapDelete(_ item: TodoItem)
     func didToggle(_ item: TodoItem)
@@ -34,12 +33,10 @@ protocol TodoListInteractorProtocol {
 
 // MARK: - Router Protocol
 protocol TodoListRouterProtocol: AnyObject {
-    func navigateToAdd(from presenter: any TodoListPresenterProtocol)
     func navigateToEdit(_ item: TodoItem, from presenter: any TodoListPresenterProtocol)
 }
 
 // MARK: - Route
 enum TodoListRoute: Hashable {
-    case add
     case edit(TodoItem)
 }

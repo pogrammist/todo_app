@@ -28,10 +28,6 @@ final class TodoListViewModel: ObservableObject, TodoListPresenterProtocol {
         }
     }
     
-    func didTapAdd() {
-        router.navigateToAdd(from: self)
-    }
-    
     func didTapEdit(_ item: TodoItem) {
         router.navigateToEdit(item, from: self)
     }

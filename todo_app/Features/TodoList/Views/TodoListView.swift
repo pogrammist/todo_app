@@ -19,15 +19,6 @@ struct TodoListView: View {
                 }
             }
             .navigationTitle("Задачи")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        viewModel.didTapAdd()
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                }
-            }
             .searchable(text: .constant(""), prompt: "Поиск задач")
             .onChange(of: "", initial: false) { _, newValue in
                 viewModel.didSearch(query: newValue)
@@ -46,13 +37,6 @@ struct TodoListView: View {
             }
             .navigationDestination(for: TodoListRoute.self) { route in
                 switch route {
-                case .add:
-                    TodoDetailView(
-                        viewModel: TodoDetailViewModel(
-                            interactor: TodoDetailInteractor(),
-                            router: TodoDetailRouter()
-                        )
-                    )
                 case .edit(let item):
                     TodoDetailView(
                         viewModel: TodoDetailViewModel(
