@@ -18,7 +18,7 @@ final class TodoListViewModel: ObservableObject, TodoListPresenterProtocol {
     
     func viewDidLoad() {
         isLoading = true
-        Task { @MainActor in
+        loadTask = Task { @MainActor in
             do {
                 items = try await interactor.loadTodos()
             } catch {
@@ -37,7 +37,7 @@ final class TodoListViewModel: ObservableObject, TodoListPresenterProtocol {
     }
     
     func didTapDelete(_ item: TodoItem) {
-        Task { @MainActor in
+        loadTask = Task { @MainActor in
             do {
                 try await interactor.deleteTodo(item)
                 items.removeAll { $0.id == item.id }
@@ -48,7 +48,7 @@ final class TodoListViewModel: ObservableObject, TodoListPresenterProtocol {
     }
     
     func didToggle(_ item: TodoItem) {
-        Task { @MainActor in
+        loadTask = Task { @MainActor in
             do {
                 let updated = try await interactor.toggleTodo(item)
                 if let index = items.firstIndex(where: { $0.id == updated.id }) {
@@ -61,7 +61,7 @@ final class TodoListViewModel: ObservableObject, TodoListPresenterProtocol {
     }
     
     func didSearch(query: String) {
-        Task { @MainActor in
+        loadTask = Task { @MainActor in
             do {
                 if query.isEmpty {
                     items = try await interactor.loadTodos()
@@ -73,4 +73,6 @@ final class TodoListViewModel: ObservableObject, TodoListPresenterProtocol {
             }
         }
     }
+    
+    private var loadTask: Task<Void, Never>?
 }

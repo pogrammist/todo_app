@@ -47,9 +47,20 @@ struct TodoListView: View {
             .navigationDestination(for: TodoListRoute.self) { route in
                 switch route {
                 case .add:
-                    Text("Добавить задачу")
+                    TodoDetailView(
+                        viewModel: TodoDetailViewModel(
+                            interactor: TodoDetailInteractor(),
+                            router: TodoDetailRouter()
+                        )
+                    )
                 case .edit(let item):
-                    Text("Редактировать: \(item.title)")
+                    TodoDetailView(
+                        viewModel: TodoDetailViewModel(
+                            interactor: TodoDetailInteractor(),
+                            router: TodoDetailRouter(),
+                            item: item
+                        )
+                    )
                 }
             }
         }
