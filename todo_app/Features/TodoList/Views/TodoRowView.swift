@@ -7,12 +7,20 @@ struct TodoRowView: View {
     
     var body: some View {
         HStack {
-            Image(systemName: item.completed ? "checkmark.circle.fill" : "circle")
-                .foregroundColor(item.completed ? .green : .gray)
-                .font(.title2)
-                .onTapGesture {
-                    onToggle()
+            ZStack {
+                Image(systemName: "circle")
+                    .foregroundColor(item.completed ? .yellow : .gray)
+                    .font(.system(size: 24, weight: .thin))
+                
+                if item.completed {
+                    Image(systemName: "checkmark")
+                        .foregroundColor(.yellow)
+                        .font(.system(size: 16, weight: .light))
                 }
+            }
+            .onTapGesture {
+                onToggle()
+            }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.title)
