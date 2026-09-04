@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TodoListView: View {
     @StateObject private var viewModel: TodoListViewModel
+    @State private var searchText = ""
     
     init(viewModel: TodoListViewModel) {
         self._viewModel = StateObject(wrappedValue: viewModel)
@@ -18,9 +19,11 @@ struct TodoListView: View {
                     )
                 }
             }
+            .listStyle(.plain)
             .navigationTitle("Задачи")
-            .searchable(text: .constant(""), prompt: "Поиск задач")
-            .onChange(of: "", initial: false) { _, newValue in
+            .navigationBarTitleDisplayMode(.large)
+            .searchable(text: $searchText, prompt: "Поиск задач")
+            .onChange(of: searchText) { _, newValue in
                 viewModel.didSearch(query: newValue)
             }
             .overlay {

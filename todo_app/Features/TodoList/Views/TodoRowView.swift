@@ -6,7 +6,7 @@ struct TodoRowView: View {
     let onDelete: () -> Void
     
     var body: some View {
-        HStack {
+        HStack(alignment: .firstTextBaseline) {
             ZStack {
                 Image(systemName: "circle")
                     .foregroundColor(item.completed ? .yellow : .gray)
@@ -21,19 +21,20 @@ struct TodoRowView: View {
             .onTapGesture {
                 onToggle()
             }
+            .alignmentGuide(.firstTextBaseline) { d in
+                d[.firstTextBaseline]
+            }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.title)
                     .font(.headline)
                     .strikethrough(item.completed)
                 
-                if !item.description.isEmpty {
-                    Text(item.description)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
+                Text(item.description.isEmpty ? "Без описания" : item.description)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
                 
-                Text(item.createdAt, style: .date)
+                Text(DateFormatter.ddMMyy.string(from: item.createdAt))
                     .font(.caption)
                     .foregroundColor(.gray)
             }
@@ -49,4 +50,12 @@ struct TodoRowView: View {
             }
         }
     }
+}
+
+extension DateFormatter {
+    static let ddMMyy: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/yy"
+        return formatter
+    }()
 }
