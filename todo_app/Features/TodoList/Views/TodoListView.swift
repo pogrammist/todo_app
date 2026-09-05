@@ -49,11 +49,6 @@ struct TodoListView: View {
                 viewModel.viewDidLoad()
             }
         }
-        .onChange(of: viewModel.editingItem) { _, newValue in
-            if newValue == nil {
-                viewModel.viewDidLoad()
-            }
-        }
         .sheet(item: Binding(
             get: { viewModel.sharedItem },
             set: { _ in viewModel.sharedItem = nil }
