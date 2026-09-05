@@ -43,9 +43,14 @@ struct TodoDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Назад") {
+                    Button {
                         viewModel.cancel()
                         dismiss()
+                    } label: {
+                        HStack {
+                            Image(systemName: "chevron.left")
+                            Text("Назад")
+                        }
                     }
                     .foregroundColor(.yellow)
                 }
