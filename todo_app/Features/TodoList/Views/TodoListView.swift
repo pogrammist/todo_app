@@ -10,37 +10,13 @@ struct TodoListView: View {
     
     var body: some View {
         NavigationStack(path: $viewModel.path) {
-            List {
-                ForEach(viewModel.items) { item in
-                    TodoRowView(
-                        item: item,
-                        onToggle: { viewModel.didToggle(item) },
-                        onDelete: { viewModel.didTapDelete(item) },
-                        onShare: { viewModel.didTapShare(item) },
-                        onEdit: { viewModel.didTapEdit(item) }
-                    )
+            listContent
+                .navigationTitle("Задачи")
+                .navigationBarTitleDisplayMode(.large)
+                .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Поиск задач")
+                .onChange(of: searchText) { _, newValue in
+                    viewModel.didSearch(query: newValue)
                 }
-            }
-            .listStyle(.plain)
-            .navigationTitle("Задачи")
-            .navigationBarTitleDisplayMode(.large)
-            .searchable(text: $searchText, prompt: "Поиск задач")
-            .onChange(of: searchText) { _, newValue in
-                viewModel.didSearch(query: newValue)
-            }
-            .overlay {
-                if viewModel.isLoading {
-                    ProgressView()
-                }
-            }
-            .alert("Ошибка", isPresented: .constant(viewModel.errorMessage != nil), presenting: viewModel.errorMessage) { _ in
-                Button("OK") {
-                    viewModel.errorMessage = nil
-                }
-            } message: { error in
-                Text(error)
-            }
-            .padding(.bottom, 50)
         }
         .onAppear {
             viewModel.viewDidLoad()
@@ -85,6 +61,35 @@ struct TodoListView: View {
             .padding(.vertical, 12)
             .background(.ultraThinMaterial)
         }
+    }
+    
+    @ViewBuilder
+    private var listContent: some View {
+        List {
+            ForEach(viewModel.items) { item in
+                TodoRowView(
+                    item: item,
+                    onToggle: { viewModel.didToggle(item) },
+                    onDelete: { viewModel.didTapDelete(item) },
+                    onShare: { viewModel.didTapShare(item) },
+                    onEdit: { viewModel.didTapEdit(item) }
+                )
+            }
+        }
+        .listStyle(.plain)
+        .overlay {
+            if viewModel.isLoading {
+                ProgressView()
+            }
+        }
+        .alert("Ошибка", isPresented: .constant(viewModel.errorMessage != nil), presenting: viewModel.errorMessage) { _ in
+            Button("OK") {
+                viewModel.errorMessage = nil
+            }
+        } message: { error in
+            Text(error)
+        }
+        .padding(.bottom, 50)
     }
     
     func taskCountLabel(_ count: Int) -> String {
