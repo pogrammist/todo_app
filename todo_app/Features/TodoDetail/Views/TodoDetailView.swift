@@ -16,11 +16,13 @@ struct TodoDetailView: View {
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        Text(viewModel.title.isEmpty ? "Без названия" : viewModel.title)
+                        TextField("Название задачи", text: $viewModel.title)
                             .font(.largeTitle)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
                             .padding(.top, 20)
+                            .textInputAutocapitalization(.sentences)
+                            .disableAutocorrection(false)
                         
                         if let item = viewModel.existingItem {
                             Text(DateFormatter.ddMMyy.string(from: item.createdAt))
@@ -61,6 +63,12 @@ struct TodoDetailView: View {
         }
         .onChange(of: viewModel.title) { _, _ in viewModel.scheduleSave() }
         .onChange(of: viewModel.description) { _, _ in viewModel.scheduleSave() }
+        .onDisappear {
+            let trimmedTitle = viewModel.title.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !trimmedTitle.isEmpty {
+                viewModel.save()
+            }
+        }
         .tint(.yellow)
     }
 }

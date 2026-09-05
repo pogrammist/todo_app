@@ -26,6 +26,11 @@ struct TodoListView: View {
                 viewModel.viewDidLoad()
             }
         }
+        .onChange(of: viewModel.newTaskItem) { _, newValue in
+            if newValue == nil {
+                viewModel.viewDidLoad()
+            }
+        }
         .sheet(item: Binding(
             get: { viewModel.sharedItem },
             set: { _ in viewModel.sharedItem = nil }
@@ -33,6 +38,15 @@ struct TodoListView: View {
             ShareSheetView(item: item)
         }
         .fullScreenCover(item: $viewModel.editingItem) { item in
+            TodoDetailView(
+                viewModel: TodoDetailViewModel(
+                    interactor: TodoDetailInteractor(),
+                    router: TodoDetailRouter(),
+                    item: item
+                )
+            )
+        }
+        .fullScreenCover(item: $viewModel.newTaskItem) { item in
             TodoDetailView(
                 viewModel: TodoDetailViewModel(
                     interactor: TodoDetailInteractor(),
@@ -50,7 +64,7 @@ struct TodoListView: View {
                 
                 HStack {
                     Spacer()
-                    Button(action: {}) {
+                    Button(action: { viewModel.didTapAdd() }) {
                         Image(systemName: "square.and.pencil")
                             .font(.title2)
                             .foregroundColor(.yellow)

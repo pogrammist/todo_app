@@ -9,6 +9,7 @@ final class TodoListViewModel: ObservableObject, TodoListPresenterProtocol {
     @Published var path = NavigationPath()
     @Published var sharedItem: TodoItem?
     @Published var editingItem: TodoItem?
+    @Published var newTaskItem: TodoItem?
     
     private let interactor: TodoListInteractorProtocol
     private let router: any TodoListRouterProtocol
@@ -84,6 +85,18 @@ final class TodoListViewModel: ObservableObject, TodoListPresenterProtocol {
     
     func didTapShare(_ item: TodoItem) {
         sharedItem = item
+    }
+    
+    func didTapAdd() {
+        let newItem = TodoItem(
+            id: Int64(Date().timeIntervalSince1970 * 1000),
+            title: "",
+            description: "",
+            createdAt: Date(),
+            updatedAt: nil,
+            completed: false
+        )
+        newTaskItem = newItem
     }
     
     private var loadTask: Task<Void, Never>?

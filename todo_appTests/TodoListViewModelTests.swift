@@ -31,16 +31,16 @@ final class TodoListViewModelTests: XCTestCase {
         XCTAssertFalse(viewModel.isLoading)
     }
     
-    func test_didTapAdd_callsRouter() {
+    func test_didTapAdd_setsNewTaskItem() {
         viewModel.didTapAdd()
-        XCTAssertTrue(mockRouter.navigateToAddCalled)
+        XCTAssertNotNil(viewModel.newTaskItem)
+        XCTAssertTrue(viewModel.newTaskItem?.title.isEmpty ?? false)
     }
     
-    func test_didTapEdit_callsRouter() {
+    func test_didTapEdit_setsEditingItem() {
         let item = TodoItem(id: 1, title: "Edit", description: "", createdAt: Date(), updatedAt: nil, completed: false)
         viewModel.didTapEdit(item)
-        XCTAssertTrue(mockRouter.navigateToEditCalled)
-        XCTAssertEqual(mockRouter.editedItem?.id, item.id)
+        XCTAssertEqual(viewModel.editingItem?.id, item.id)
     }
     
     func test_didSearch_withEmptyQuery_loadsAll() async throws {

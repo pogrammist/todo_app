@@ -22,6 +22,7 @@ protocol TodoListPresenterProtocol: ObservableObject {
     func didToggle(_ item: TodoItem)
     func didSearch(query: String)
     func didTapShare(_ item: TodoItem)
+    func didTapAdd()
 }
 
 // MARK: - Interactor Protocol
