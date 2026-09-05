@@ -31,7 +31,6 @@ struct TodoDetailView: View {
                         TextEditor(text: $viewModel.description)
                             .font(.body)
                             .foregroundColor(.white)
-                            .padding(12)
                             .background(Color.clear)
                             .scrollContentBackground(.hidden)
                             .frame(minHeight: 200)
