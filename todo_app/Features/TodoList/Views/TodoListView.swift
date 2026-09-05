@@ -40,6 +40,7 @@ struct TodoListView: View {
             } message: { error in
                 Text(error)
             }
+            .padding(.bottom, 50)
         }
         .onAppear {
             viewModel.viewDidLoad()
@@ -64,6 +65,44 @@ struct TodoListView: View {
                 )
             )
         }
+        .safeAreaInset(edge: .bottom) {
+            ZStack {
+                Text("\(viewModel.items.count) \(taskCountLabel(viewModel.items.count))")
+                    .font(.subheadline)
+                    .foregroundColor(.primary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                
+                HStack {
+                    Spacer()
+                    Button(action: {}) {
+                        Image(systemName: "square.and.pencil")
+                            .font(.title2)
+                            .foregroundColor(.yellow)
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(.ultraThinMaterial)
+        }
+    }
+    
+    func taskCountLabel(_ count: Int) -> String {
+        let mod10 = count % 10
+        let mod100 = count % 100
+        
+        if mod100 >= 11 && mod100 <= 19 {
+            return "Задач"
+        }
+        
+        switch mod10 {
+        case 1:
+            return "Задача"
+        case 2...4:
+            return "Задачи"
+        default:
+            return "Задач"
+        }
     }
 }
 
@@ -71,6 +110,15 @@ struct ShareSheetView: View {
     let item: TodoItem
     
     var body: some View {
-        ShareLink(item: "\(item.title)\n\(item.description.isEmpty ? "Без описания" : item.description)", preview: SharePreview(item.title, image: "checkmark.circle"))
+        ShareLink(item: "\(item.title)\n\(item.description.isEmpty ? "Без описания" : item.description)", preview: SharePreview(item.title, image: Image(systemName: "checkmark.circle")))
     }
+}
+
+#Preview {
+    TodoListView(
+        viewModel: TodoListViewModel(
+            interactor: TodoListInteractor(storage: TodoStorage(), api: TodoAPIClient()),
+            router: TodoListRouter()
+        )
+    )
 }
