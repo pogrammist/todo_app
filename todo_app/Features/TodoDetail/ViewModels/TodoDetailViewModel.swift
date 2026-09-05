@@ -5,9 +5,11 @@ final class TodoDetailViewModel: ObservableObject, TodoDetailPresenterProtocol {
     @Published var title: String = ""
     @Published var description: String = ""
     
+    let existingItem: TodoItem?
+    
     private let interactor: TodoDetailInteractorProtocol
     private let router: TodoDetailRouterProtocol
-    private let existingItem: TodoItem?
+    private var saveTask: Task<Void, Never>?
     
     var isEditing: Bool { existingItem != nil }
     
@@ -24,10 +26,37 @@ final class TodoDetailViewModel: ObservableObject, TodoDetailPresenterProtocol {
         }
     }
     
+    func scheduleSave() {
+        saveTask?.cancel()
+        saveTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 400_000_000)
+            guard !Task.isCancelled else { return }
+            let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmedTitle.isEmpty else { return }
+            do {
+                let item = TodoItem(
+                    id: existingItem?.id ?? Int64(Date().timeIntervalSince1970 * 1000),
+                    title: trimmedTitle,
+                    description: description,
+                    createdAt: existingItem?.createdAt ?? Date(),
+                    updatedAt: Date(),
+                    completed: existingItem?.completed ?? false
+                )
+                _ = try await interactor.saveItem(item)
+            } catch {
+                // silently ignore background save errors
+            }
+        }
+    }
+    
     func save() {
+        save { _ in }
+    }
+    
+    func save(completion: @escaping (Bool) -> Void = { _ in }) {
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedTitle.isEmpty else {
-            // Will be handled by view
+            completion(false)
             return
         }
         
@@ -42,14 +71,14 @@ final class TodoDetailViewModel: ObservableObject, TodoDetailPresenterProtocol {
                     completed: existingItem?.completed ?? false
                 )
                 _ = try await interactor.saveItem(item)
-                router.dismiss()
+                completion(true)
             } catch {
-                // Will be handled by view
+                completion(false)
             }
         }
     }
     
     func cancel() {
-        router.dismiss()
+        // no-op, dismiss handled by view
     }
 }

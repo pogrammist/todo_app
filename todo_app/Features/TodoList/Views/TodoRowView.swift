@@ -4,6 +4,8 @@ struct TodoRowView: View {
     let item: TodoItem
     let onToggle: () -> Void
     let onDelete: () -> Void
+    let onShare: () -> Void
+    let onEdit: () -> Void
     
     var body: some View {
         HStack(alignment: .firstTextBaseline) {
@@ -43,6 +45,25 @@ struct TodoRowView: View {
         }
         .padding(.vertical, 4)
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            Button(role: .destructive) {
+                onDelete()
+            } label: {
+                Label("Удалить", systemImage: "trash")
+            }
+        }
+        .contextMenu {
+            Button {
+                onEdit()
+            } label: {
+                Label("Редактировать", systemImage: "pencil")
+            }
+            
+            Button {
+                onShare()
+            } label: {
+                Label("Поделиться", systemImage: "square.and.arrow.up")
+            }
+            
             Button(role: .destructive) {
                 onDelete()
             } label: {

@@ -7,6 +7,8 @@ final class TodoListViewModel: ObservableObject, TodoListPresenterProtocol {
     @Published var isLoading = false
     @Published var errorMessage: String?
     @Published var path = NavigationPath()
+    @Published var sharedItem: TodoItem?
+    @Published var editingItem: TodoItem?
     
     private let interactor: TodoListInteractorProtocol
     private let router: any TodoListRouterProtocol
@@ -14,6 +16,16 @@ final class TodoListViewModel: ObservableObject, TodoListPresenterProtocol {
     init(interactor: any TodoListInteractorProtocol, router: any TodoListRouterProtocol) {
         self.interactor = interactor
         self.router = router
+    }
+    
+    func refresh() async {
+        isLoading = true
+        do {
+            items = try await interactor.loadTodos()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        isLoading = false
     }
     
     func viewDidLoad() {
@@ -29,7 +41,7 @@ final class TodoListViewModel: ObservableObject, TodoListPresenterProtocol {
     }
     
     func didTapEdit(_ item: TodoItem) {
-        router.navigateToEdit(item, from: self)
+        editingItem = item
     }
     
     func didTapDelete(_ item: TodoItem) {
@@ -68,6 +80,10 @@ final class TodoListViewModel: ObservableObject, TodoListPresenterProtocol {
                 errorMessage = error.localizedDescription
             }
         }
+    }
+    
+    func didTapShare(_ item: TodoItem) {
+        sharedItem = item
     }
     
     private var loadTask: Task<Void, Never>?

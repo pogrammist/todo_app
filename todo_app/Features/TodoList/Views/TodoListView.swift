@@ -15,7 +15,9 @@ struct TodoListView: View {
                     TodoRowView(
                         item: item,
                         onToggle: { viewModel.didToggle(item) },
-                        onDelete: { viewModel.didTapDelete(item) }
+                        onDelete: { viewModel.didTapDelete(item) },
+                        onShare: { viewModel.didTapShare(item) },
+                        onEdit: { viewModel.didTapEdit(item) }
                     )
                 }
             }
@@ -38,21 +40,42 @@ struct TodoListView: View {
             } message: { error in
                 Text(error)
             }
-            .navigationDestination(for: TodoListRoute.self) { route in
-                switch route {
-                case .edit(let item):
-                    TodoDetailView(
-                        viewModel: TodoDetailViewModel(
-                            interactor: TodoDetailInteractor(),
-                            router: TodoDetailRouter(),
-                            item: item
-                        )
-                    )
-                }
-            }
         }
         .onAppear {
             viewModel.viewDidLoad()
         }
+        .onChange(of: viewModel.editingItem) { _, newValue in
+            if newValue == nil {
+                viewModel.viewDidLoad()
+            }
+        }
+        .onChange(of: viewModel.editingItem) { _, newValue in
+            if newValue == nil {
+                viewModel.viewDidLoad()
+            }
+        }
+        .sheet(item: Binding(
+            get: { viewModel.sharedItem },
+            set: { _ in viewModel.sharedItem = nil }
+        )) { item in
+            ShareSheetView(item: item)
+        }
+        .fullScreenCover(item: $viewModel.editingItem) { item in
+            TodoDetailView(
+                viewModel: TodoDetailViewModel(
+                    interactor: TodoDetailInteractor(),
+                    router: TodoDetailRouter(),
+                    item: item
+                )
+            )
+        }
+    }
+}
+
+struct ShareSheetView: View {
+    let item: TodoItem
+    
+    var body: some View {
+        ShareLink(item: "\(item.title)\n\(item.description.isEmpty ? "Без описания" : item.description)", preview: SharePreview(item.title, image: "checkmark.circle"))
     }
 }
